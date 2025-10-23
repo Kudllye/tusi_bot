@@ -6,13 +6,23 @@ import { programarRecordatorio, cancelarTodosLosRecordatorios } from './utils/sc
 
 // Crear cliente de WhatsApp con autenticación local
 const client = new Client({
-    authStrategy: new LocalAuth({
-        clientId: "tusibot"
-    }),
-    puppeteer: {
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    }
+  authStrategy: new LocalAuth({
+    dataPath: 'wwebjs_auth'
+  }),
+  puppeteer: {
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process', // importante para Render
+      '--disable-gpu'
+    ],
+    executablePath: '/usr/bin/google-chrome-stable' // Render usa Chrome de sistema
+  }
 });
 
 // Evento: Generar código QR para vincular WhatsApp
