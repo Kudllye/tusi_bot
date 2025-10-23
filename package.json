@@ -16,8 +16,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "whatsapp-web.js": "^1.23.0",
+    "node-schedule": "^2.1.1",
+    "puppeteer": "^24.26.0",
     "qrcode-terminal": "^0.12.0",
-    "node-schedule": "^2.1.1"
+    "whatsapp-web.js": "^1.23.0"
   }
 }

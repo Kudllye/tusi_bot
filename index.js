@@ -18,10 +18,9 @@ const client = new Client({
       '--disable-accelerated-2d-canvas',
       '--no-first-run',
       '--no-zygote',
-      '--single-process', // importante para Render
+      '--single-process',
       '--disable-gpu'
-    ],
-    executablePath: '/usr/bin/google-chrome-stable' // Render usa Chrome de sistema
+    ]
   }
 });
 
