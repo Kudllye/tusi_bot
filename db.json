@@ -1,0 +1,32 @@
+{
+  "recordatorios": [
+    {
+      "id": 1760916982987,
+      "descripcion": "examen inglés",
+      "fecha": "10/20/2025",
+      "hora": "6:00pm",
+      "fechaCompleta": "2026-08-10T23:00:00.000Z",
+      "chatId": "51942324502-1584570124@g.us",
+      "activo": false
+    },
+    {
+      "id": 1760917043287,
+      "descripcion": "examen inglés",
+      "fecha": "10/19/2025",
+      "hora": "6:40pm",
+      "fechaCompleta": "2026-07-10T23:40:00.000Z",
+      "chatId": "51942324502-1584570124@g.us",
+      "activo": true
+    },
+    {
+      "id": 1760917718877,
+      "descripcion": "prueba formato",
+      "fecha": "19/10/2025",
+      "hora": "6:50pm",
+      "fechaCompleta": "2025-10-19T23:50:00.000Z",
+      "chatId": "51942324502-1584570124@g.us",
+      "activo": false,
+      "enviado": true
+    }
+  ]
+}
