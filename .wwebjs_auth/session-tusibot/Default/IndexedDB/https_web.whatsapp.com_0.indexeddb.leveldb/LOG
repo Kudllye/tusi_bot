@@ -1,0 +1,13 @@
+2025/10/23-09:35:15.684 96c Reusing MANIFEST C:\Users\skate\Desktop\tusibot\.wwebjs_auth\session-tusibot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/10/23-09:35:15.711 96c Recovering log #39
+2025/10/23-09:35:15.781 96c Reusing old log C:\Users\skate\Desktop\tusibot\.wwebjs_auth\session-tusibot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000039.log 
+2025/10/23-09:35:22.435 278c Level-0 table #44: started
+2025/10/23-09:35:22.486 278c Level-0 table #44: 396690 bytes OK
+2025/10/23-09:35:22.489 278c Delete type=0 #39
+2025/10/23-09:35:22.490 278c Manual compaction at level-0 from '\x00\x19\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1a\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/10/23-09:35:28.819 96c Compacting 1@1 + 1@2 files
+2025/10/23-09:35:28.943 96c Generated table #45@1: 14958 keys, 560147 bytes
+2025/10/23-09:35:28.943 96c Compacted 1@1 + 1@2 files => 560147 bytes
+2025/10/23-09:35:28.944 96c compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/10/23-09:35:28.945 96c Delete type=2 #41
+2025/10/23-09:35:28.945 96c Delete type=2 #44

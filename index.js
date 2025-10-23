@@ -1,27 +1,39 @@
+import fs from 'fs';
+import unzipper from 'unzipper';
 import pkg from 'whatsapp-web.js';
 const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
 import { guardarRecordatorio, obtenerRecordatorios, eliminarRecordatorio } from './utils/db.js';
 import { programarRecordatorio, cancelarTodosLosRecordatorios } from './utils/scheduler.js';
 
+// 🗂️ Función para restaurar la sesión desde auth.zip
+async function restoreSession() {
+    if (!fs.existsSync('./.wwebjs_auth')) {
+        if (fs.existsSync('./auth.zip')) {
+            console.log('🗂 Restaurando sesión desde auth.zip...');
+            await fs.createReadStream('./auth.zip')
+                .pipe(unzipper.Extract({ path: './' }))
+                .promise();
+            console.log('✅ Sesión restaurada correctamente.');
+        } else {
+            console.log('⚠️ No se encontró auth.zip, se pedirá QR al iniciar.');
+        }
+    } else {
+        console.log('💾 Sesión ya existente, no es necesario restaurar.');
+    }
+}
+
+await restoreSession();
+
 // Crear cliente de WhatsApp con autenticación local
 const client = new Client({
-  authStrategy: new LocalAuth({
-    dataPath: 'wwebjs_auth'
-  }),
-  puppeteer: {
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
-      '--disable-gpu'
-    ]
-  }
+    authStrategy: new LocalAuth({
+        clientId: "tusibot"
+    }),
+    puppeteer: {
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
 });
 
 // Evento: Generar código QR para vincular WhatsApp
@@ -35,7 +47,6 @@ client.on('ready', () => {
     console.log('✅ Tusi Bot está listo y conectado!');
     console.log('🔔 Cargando recordatorios programados...');
     
-    // Cargar todos los recordatorios existentes al iniciar
     const recordatorios = obtenerRecordatorios();
     recordatorios.forEach(recordatorio => {
         programarRecordatorio(recordatorio, client);
@@ -48,23 +59,13 @@ client.on('ready', () => {
 client.on('message', async (message) => {
     const texto = message.body.trim();
     
-    // Comando: !info
     if (texto === '!info') {
         await manejarComandoInfo(message);
-    }
-    
-    // Comando: !recordar
-    else if (texto.startsWith('!recordar ')) {
+    } else if (texto.startsWith('!recordar ')) {
         await manejarComandoRecordar(message, texto);
-    }
-    
-    // Comando: !ver recordatorios
-    else if (texto === '!ver recordatorios') {
+    } else if (texto === '!ver recordatorios') {
         await manejarComandoVer(message);
-    }
-    
-    // Comando: !eliminar
-    else if (texto.startsWith('!eliminar ')) {
+    } else if (texto.startsWith('!eliminar ')) {
         await manejarComandoEliminar(message, texto);
     }
 });
@@ -110,8 +111,6 @@ El bot enviará automáticamente un mensaje en la fecha y hora programadas para 
 // Maneja el comando !recordar
 async function manejarComandoRecordar(message, texto) {
     try {
-        // Extraer partes del comando usando regex
-        // Formato esperado: !recordar <descripción> <dd/mm/yyyy> <hh:mm(am|pm)>
         const regex = /!recordar\s+(.+?)\s+(\d{2}\/\d{2}\/\d{4})\s+(\d{1,2}:\d{2})(am|pm)/i;
         const match = texto.match(regex);
         
@@ -121,42 +120,29 @@ async function manejarComandoRecordar(message, texto) {
         }
         
         const [, descripcion, fecha, hora, periodo] = match;
-        
-        // Parsear fecha y hora
         const [dia, mes, año] = fecha.split('/').map(Number);
         let [horas, minutos] = hora.split(':').map(Number);
         
-        // Convertir a formato 24 horas
-        if (periodo.toLowerCase() === 'pm' && horas !== 12) {
-            horas += 12;
-        } else if (periodo.toLowerCase() === 'am' && horas === 12) {
-            horas = 0;
-        }
+        if (periodo.toLowerCase() === 'pm' && horas !== 12) horas += 12;
+        else if (periodo.toLowerCase() === 'am' && horas === 12) horas = 0;
         
-        // Crear objeto Date
         const fechaRecordatorio = new Date(año, mes - 1, dia, horas, minutos);
-        
-        // Validar que la fecha sea futura
         if (fechaRecordatorio <= new Date()) {
             await message.reply('❌ La fecha y hora deben ser futuras.');
             return;
         }
         
-        // Crear objeto recordatorio
         const recordatorio = {
             id: Date.now(),
             descripcion,
-            fecha: fecha,
+            fecha,
             hora: `${hora}${periodo}`,
             fechaCompleta: fechaRecordatorio.toISOString(),
             chatId: message.from,
             activo: true
         };
         
-        // Guardar en base de datos
         guardarRecordatorio(recordatorio);
-        
-        // Programar el recordatorio
         programarRecordatorio(recordatorio, client);
         
         await message.reply(`✅ Recordatorio guardado: ${descripcion} - ${fecha} ${hora}${periodo}`);
@@ -189,14 +175,12 @@ async function manejarComandoVer(message) {
 async function manejarComandoEliminar(message, texto) {
     try {
         const numero = parseInt(texto.replace('!eliminar', '').trim());
-        
         if (isNaN(numero) || numero < 1) {
             await message.reply('❌ Indica el número del recordatorio.\n\nEjemplo: !eliminar 1');
             return;
         }
         
         const recordatorios = obtenerRecordatorios().filter(r => r.chatId === message.from && r.activo);
-        
         if (numero > recordatorios.length) {
             await message.reply(`❌ No existe el recordatorio #${numero}. Usa !ver recordatorios para ver la lista.`);
             return;
