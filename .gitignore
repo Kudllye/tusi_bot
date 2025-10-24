@@ -1,6 +1,5 @@
 node_modules/
 auth/
-cache/
-session.json
-*.env
-*.log
+.wwebjs_auth/
+.wwebjs_cache/
+recordatorios.json
